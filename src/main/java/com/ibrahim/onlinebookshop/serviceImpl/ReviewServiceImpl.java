@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -122,4 +123,23 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewRepo.delete(bookReview);
     }
+
+    @Override
+    public List<ReviewDto> getAllUserReview() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<UserEntity> user = userRepo.findByEmail(authentication.getName());
+        int currentUserId = user.get().getUserId();
+        List<Review>allreviews=reviewRepo.findAll();
+        List<ReviewDto>userReviews=new ArrayList<>();
+        for(Review r1:allreviews)
+        {
+            if(r1.getUserEntity().getUserId()==currentUserId)
+            {
+                userReviews.add(modelMapper.map(r1,ReviewDto.class));
+            }
+        }
+        return userReviews;
+    }
+
+
 }

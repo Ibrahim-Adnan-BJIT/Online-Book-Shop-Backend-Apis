@@ -14,7 +14,7 @@ public interface BookService {
      BookDto getById(int bookId) throws InvalidBookId;
      List<BookDto> getAllBooks();
 
-     BookDto updateBook(BookDto book) throws InvalidBookId;
+     BookDto updateBook(BookDto book,int id) throws InvalidBookId;
 
-     void deleteBook(BookDto bookDto) throws InvalidBookId, AlreadyOwned;
+     void deleteBook(int id) throws InvalidBookId, AlreadyOwned;
 }

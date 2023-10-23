@@ -16,4 +16,5 @@ public interface ReviewService {
     public ReviewDto updateReview(int bookId, int reviewId, ReviewDto bookReviewDto) throws InvalidBookId,ReviewNotFound, UnAuthorizedPeople,Exception;
 
     public void deleteReview(int bookId, int reviewId) throws InvalidBookId,ReviewNotFound,UnAuthorizedPeople,Exception;
+     public List<ReviewDto>getAllUserReview();
 }

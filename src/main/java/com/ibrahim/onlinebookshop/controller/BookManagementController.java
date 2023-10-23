@@ -39,22 +39,22 @@ public class BookManagementController {
         }
     }
 
-    @PutMapping("/books/update")
+    @PutMapping("/books/update/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> updateBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<?> updateBook(@RequestBody BookDto bookDto,@PathVariable int id) {
         try {
-            BookDto updatedBook = bookService.updateBook(bookDto);
+            BookDto updatedBook = bookService.updateBook(bookDto,id);
             return new  ResponseEntity<>(updatedBook, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @DeleteMapping("/books/delete")
+    @DeleteMapping("/books/delete/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<?> deleteBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<?> deleteBook(@PathVariable int id) {
         try {
-            bookService.deleteBook(bookDto);
+            bookService.deleteBook(id);
             return new  ResponseEntity<>("Book Deleted!", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -71,9 +71,19 @@ public class BookManagementController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/books/{id}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<?> getBookById(@PathVariable int id) {
+        try {
+            BookDto bookDto = bookService.getById(id);
+            return new  ResponseEntity<>(bookDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
-    @GetMapping("/books/{bookId}/borrow")
+    @PostMapping("/books/{bookId}/borrow")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> borrowBook(@PathVariable int bookId) {
         try {
@@ -84,7 +94,7 @@ public class BookManagementController {
         }
     }
 
-    @GetMapping("/books/{bookId}/return")
+    @PostMapping("/books/{bookId}/return")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     public ResponseEntity<?> returnBook(@PathVariable int bookId) {
         try {
@@ -146,6 +156,16 @@ public class BookManagementController {
     public ResponseEntity<?> seeAllReview(@PathVariable int bookId) {
         try {
             List <ReviewDto> newReview =  reviewService.allBookReview(bookId);
+            return new ResponseEntity<>(newReview, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/books/reviews")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> seeUserReview() {
+        try {
+            List <ReviewDto> newReview =  reviewService.getAllUserReview();
             return new ResponseEntity<>(newReview, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

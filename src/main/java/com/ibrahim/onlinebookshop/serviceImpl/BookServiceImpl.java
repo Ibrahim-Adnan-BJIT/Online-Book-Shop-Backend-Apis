@@ -50,8 +50,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDto updateBook(BookDto book) throws InvalidBookId{
-        Book book1=bookRepo.findById(book.getBookId()).orElseThrow(()->new InvalidBookId("Please Enter Valid Id"));
+    public BookDto updateBook(BookDto book,int id) throws InvalidBookId{
+        Book book1=bookRepo.findById(id).orElseThrow(()->new InvalidBookId("Please Enter Valid Id"));
         book1.setName(book.getName());
         book1.setAuthor(book.getAuthor());
         book1.setIsAvailable(book.getIsAvailable());
@@ -60,9 +60,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBook(BookDto bookDto) throws InvalidBookId, AlreadyOwned {
+    public void deleteBook(int id) throws InvalidBookId, AlreadyOwned {
 
-        Book book1=bookRepo.findById(bookDto.getBookId()).orElseThrow(()->new InvalidBookId("Please Enter Valid Id"));
+        Book book1=bookRepo.findById(id).orElseThrow(()->new InvalidBookId("Please Enter Valid Id"));
 
         if(book1.getIsAvailable().equals("OCCUPIED")) throw new AlreadyOwned("This book is Borrowed by another person");
         bookRepo.deleteById(book1.getBookId());

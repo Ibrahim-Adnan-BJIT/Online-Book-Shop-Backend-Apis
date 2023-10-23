@@ -1,6 +1,7 @@
 package com.ibrahim.onlinebookshop.controller;
 
 import com.ibrahim.onlinebookshop.constans.AppConstants;
+import com.ibrahim.onlinebookshop.dto.ProfileDto;
 import com.ibrahim.onlinebookshop.dto.UserDto;
 import com.ibrahim.onlinebookshop.dto.UserLoginReqModel;
 import com.ibrahim.onlinebookshop.service.UserService;
@@ -28,6 +29,17 @@ public class UserManagementController {
     @Autowired
     private UserService userService;
 
+
+    @GetMapping("/users/profile")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_CUSTOMER')")
+    public ResponseEntity<?> userProfile() {
+        try {
+            ProfileDto profileDto=userService.getProfile();
+            return new ResponseEntity<>(profileDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
     @GetMapping("/users/{userId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> userDetailsByUserId(@PathVariable int userId) {
@@ -62,8 +74,9 @@ public class UserManagementController {
                 String accessToken = JWTUtils.generateToken(userDto.getEmail());
 
                 Map<String, Object> loginResponse = new HashMap<>();
-                loginResponse.put("userId", userDto.getUserId());
+                loginResponse.put("role", userDto.getRole());
                 loginResponse.put("email", userDto.getEmail());
+                loginResponse.put("id",userDto.getUserId());
                 loginResponse.put(AppConstants.HEADER_STRING, AppConstants.TOKEN_PREFIX + accessToken);
                 return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
 

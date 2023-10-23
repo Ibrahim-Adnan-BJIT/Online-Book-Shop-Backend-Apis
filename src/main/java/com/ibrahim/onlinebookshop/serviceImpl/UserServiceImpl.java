@@ -1,6 +1,7 @@
 package com.ibrahim.onlinebookshop.serviceImpl;
 
 import com.ibrahim.onlinebookshop.constans.AppConstants;
+import com.ibrahim.onlinebookshop.dto.ProfileDto;
 import com.ibrahim.onlinebookshop.dto.UserDto;
 import com.ibrahim.onlinebookshop.exceptions.EmailAlreadyExist;
 import com.ibrahim.onlinebookshop.exceptions.ResourceNotFoundException;
@@ -11,6 +12,8 @@ import com.ibrahim.onlinebookshop.utlis.JWTUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -38,7 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(user.getEmail());
         userEntity.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userEntity.setRole(user.getRole());
+        userEntity.setRole("CUSTOMER");
         String publicUserId = JWTUtils.generateUserID(10);
         userEntity.setUsername(publicUserId);
         userEntity.setAddress(user.getAddress());
@@ -60,6 +64,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return returnValue;
     }
 
+    @Override
+    public ProfileDto getProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Optional<UserEntity> user=userRepository.findByEmail(authentication.getName());
+        return modelMapper.map(user,ProfileDto.class);
+    }
+
 
     @Override
     public UserDto getById(int id) throws ResourceNotFoundException{
@@ -73,4 +84,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new User(userEntity.getEmail(),userEntity.getPassword(),
                 true,true,true,true,new ArrayList<>());
     }
+
 }

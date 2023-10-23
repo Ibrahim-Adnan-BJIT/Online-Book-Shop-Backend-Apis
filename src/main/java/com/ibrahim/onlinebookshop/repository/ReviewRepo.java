@@ -13,4 +13,5 @@ public interface ReviewRepo  extends JpaRepository<Review,Integer> {
     List<Review> findAllByBook(Book bookEntity) throws Exception;
 
     Review findByReviewId(int reviewId) throws Exception;
+
 }
